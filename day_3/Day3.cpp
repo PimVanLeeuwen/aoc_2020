@@ -5,23 +5,30 @@
 #include <cstring>
 #include <sstream>
 #include <iostream>
+#include <numeric>
 using namespace std;
 
 void Day3::execute(const vector<string>& lines) {
-    long part_1 = 0, part_2 = 0;
-    vector<vector<string>> matrix;
+    vector<vector<char>> matrix;
 
     for (const auto &line: lines) {
-        // convert into a string stream to split on token
-        stringstream ss(line); string token;
-        vector<string> matrix_line;
-
-        // separate line
-        while (getline(ss, token, ' ')) matrix_line.push_back(token);
-
+        vector<char> matrix_line;
+        for (char c : line) matrix_line.push_back(c);
         matrix.push_back(matrix_line);
     }
 
-    cout << "Part 1: " << part_1 << endl;
-    cout << "Part 2: " << part_2 << endl;
+    vector<int> trees_per_slope;
+    vector<pair<int, int>> slopes = {{1,1}, {3,1}, {5,1}, {7,1}, {1, 2}};
+
+    for (const auto [x_slope,y_slope] : slopes) {
+        int x = 0, y = 0, trees = 0;
+        while (y < matrix.size() - y_slope) {
+            x += x_slope; y += y_slope;
+            if (matrix[y][x % matrix[0].size()] == '#') trees++;
+        }
+        trees_per_slope.push_back(trees);
+    }
+
+    cout << "Part 1: " << trees_per_slope[1] << endl;
+    cout << "Part 2: " << accumulate(trees_per_slope.begin(), trees_per_slope.end(), 1, multiplies<>{}) << endl;
 }
