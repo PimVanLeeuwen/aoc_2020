@@ -9,20 +9,29 @@
 using namespace std;
 
 void Day15::execute(const vector<string> &lines) {
-    long part_1 = 0, part_2 = 0;
-    vector<vector<string>> matrix;
+    vector starting_numbers = {0,1,4,13,15,12,16};
+    map<int, pair<int, int>> last_seen = {{0, {-1, -1}}};
 
-    for (const auto &line: lines) {
-        // convert into a string stream to split on token
-        stringstream ss(line); string token;
-        vector<string> matrix_line;
+    for (int i = 0; i < 30000000; i++) {
+        if (i < starting_numbers.size()) {
+            last_seen[starting_numbers[i]] = {-1, i};
+            continue;
+        }
 
-        // separate line
-        while (getline(ss, token, ' ')) matrix_line.push_back(token);
+        const int last_num = starting_numbers[i-1];
+        const int last_index = last_seen[last_num].first;
 
-        matrix.push_back(matrix_line);
+        (last_index == -1) ? starting_numbers.push_back(0) : starting_numbers.push_back(i - 1 - last_index);
+
+        if (last_seen.find(starting_numbers[i]) == last_seen.end()) {
+            last_seen[starting_numbers[i]] = {-1, i};
+        } else {
+            last_seen[starting_numbers[i]].first = last_seen[starting_numbers[i]].second;
+            last_seen[starting_numbers[i]].second = i;
+        }
+
+        if (i == 2019) cout << "Part 1: " << starting_numbers.back() << endl;
     }
 
-    cout << "Part 1: " << part_1 << endl;
-    cout << "Part 2: " << part_2 << endl;
+    cout << "Part 2: " << starting_numbers.back() << endl;
 }
